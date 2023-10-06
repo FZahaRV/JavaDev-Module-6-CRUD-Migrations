@@ -19,8 +19,7 @@ public class ClientService {
     }
     public long create(String name) {
         if (name.length() < 2 || name.length() > 1000) {
-            System.out.println("Name (" + name + ") not valid");
-            return 0;
+            throw new IllegalArgumentException("Name (" + name + ") not valid");
         }
         long result = 0;
         try{
@@ -42,8 +41,7 @@ public class ClientService {
     }
     public String getById(long id) {
         if (id > getMaxId()) {
-            System.out.println("Client with id " + id + " does not exist");
-            return "";
+            throw new IllegalArgumentException("Client with id " + id + " does not exist");
         }
         String result = null;
         try{
@@ -62,8 +60,7 @@ public class ClientService {
     }
     public void setName(long id, String name) {
         if (id > getMaxId() || name.length() < 2 || name.length() > 1000) {
-            System.out.println("Client with id " + id + " does not exist or name (" + name + ") not valid");
-            return;
+            throw new IllegalArgumentException("Client with id " + id + " does not exist or name (" + name + ") not valid");
         }
         try {
             createSt = conn.prepareStatement("UPDATE client SET name = (?) WHERE id = (?)");
@@ -77,8 +74,7 @@ public class ClientService {
     }
     public void deleteById(long id) {
         if (id > getMaxId()) {
-            System.out.println("Client with id " + id + " does not exist");
-            return;
+            throw new IllegalArgumentException("Client with id " + id + " does not exist");
         }
         try {
             createSt = conn.prepareStatement("DELETE FROM client WHERE id = (?)");
@@ -121,5 +117,11 @@ public class ClientService {
         return result;
     }
     public record Client(String name, long id) {
+        public Client {
+            if (name.length() < 2 || name.length() > 1000 || name == null) {
+                throw new IllegalArgumentException("Name not valid");
+            }
+
+        }
     }
 }
